@@ -14,3 +14,8 @@ https://nextjs.org/telemetry
 
 ○ Compiling / ...
  GET / 200 in 4.9s (next.js: 4.6s, application-code: 343ms)
+ GET / 200 in 1593ms (next.js: 792ms, application-code: 801ms)
+ GET / 200 in 72ms (next.js: 7ms, application-code: 65ms)
+ GET / 200 in 81ms (next.js: 6ms, application-code: 76ms)
+ GET / 200 in 83ms (next.js: 8ms, application-code: 75ms)
+ GET / 200 in 80ms (next.js: 4ms, application-code: 76ms)

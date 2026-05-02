@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { NHLGame } from '../../types/nhl';
 import { SeatGeekAdapter } from '../../services/adapters/seatgeek';
+import { ArenaMap } from '../components/ArenaMap';
 
 type Currency = 'usd' | 'cad';
 
@@ -10,6 +11,7 @@ export default function Home() {
   const [games, setGames] = useState<NHLGame[]>([]);
   const [currency, setCurrency] = useState<Currency>('usd');
   const [loading, setLoading] = useState(true);
+  const [selectedGameForMap, setSelectedGameForMap] = useState<NHLGame | null>(null);
 
   useEffect(() => {
     async function loadGames() {
@@ -95,6 +97,7 @@ export default function Home() {
                       <th className="px-6 py-4 text-right">Avg Price</th>
                       <th className="px-6 py-4 text-right">Lowest Price</th>
                       <th className="px-6 py-4 text-right">Deal Score</th>
+                      <th className="px-6 py-4 text-center">Map</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-200 dark:divide-zinc-700 text-sm">
@@ -117,13 +120,26 @@ export default function Home() {
                           <td className="px-6 py-4 text-right font-medium">
                             {formatPrice(avg, currency)}
                           </td>
-                          <td className="px-6 py-4 text-right font-medium text-green-600 dark:text-green-400">
-                            {formatPrice(low, currency)}
+                          <td className="px-6 py-4 text-right font-medium text-green-600 dark:text-green-400 flex flex-col items-end">
+                            <span>{formatPrice(low, currency)}</span>
+                            {game.lowestPriceSection && (
+                              <span className="text-xs text-gray-400 font-normal">
+                                ({game.lowestPriceSection})
+                              </span>
+                            )}
                           </td>
                           <td className="px-6 py-4 text-right">
                             <span className="inline-flex items-center px-2.5 py-0.5 rounded-full font-medium bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300">
                               {dealScore}% OFF
                             </span>
+                          </td>
+                          <td className="px-6 py-4 text-center">
+                            <button
+                              onClick={() => setSelectedGameForMap(game)}
+                              className="text-sm font-medium text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 underline underline-offset-2"
+                            >
+                              View Map
+                            </button>
                           </td>
                         </tr>
                       );
@@ -140,6 +156,43 @@ export default function Home() {
           )}
         </main>
       </div>
+
+      {/* Arena Map Modal */}
+      {selectedGameForMap && (
+        <div className="fixed inset-0 z-40 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+          <div className="bg-white dark:bg-zinc-800 rounded-xl shadow-2xl w-full max-w-4xl max-h-[90vh] flex flex-col overflow-hidden">
+            <div className="p-4 border-b border-gray-200 dark:border-zinc-700 flex items-center justify-between">
+              <div>
+                <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100">
+                  Arena Pricing Map
+                </h3>
+                <p className="text-sm text-gray-500 dark:text-gray-400">
+                  {selectedGameForMap.awayTeam} @ {selectedGameForMap.homeTeam} ({selectedGameForMap.arena})
+                </p>
+              </div>
+              <button
+                onClick={() => setSelectedGameForMap(null)}
+                className="p-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 transition-colors"
+                aria-label="Close modal"
+              >
+                <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+
+            <div className="flex-1 overflow-auto bg-gray-50 dark:bg-zinc-900 p-6">
+              <div className="text-center mb-4">
+                <p className="text-sm text-gray-500 dark:text-gray-400">
+                  Hover over the sections to view average pricing.
+                </p>
+              </div>
+              <ArenaMap sections={selectedGameForMap.sections} currency={currency} />
+            </div>
+          </div>
+        </div>
+      )}
+
     </div>
   );
 }
