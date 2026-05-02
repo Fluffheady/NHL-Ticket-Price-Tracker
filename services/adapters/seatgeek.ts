@@ -2,40 +2,46 @@ import { NHLGame, TicketProvider } from '../../types/nhl';
 import { convertUsdToPriceObject } from '../currency';
 
 export class SeatGeekAdapter implements TicketProvider {
-  // Helper to dynamically generate section data
+  // Helper to dynamically generate section data (KeyBank Center specifically)
   private async generateDetailedSections(basePrice: number) {
     const sections = [];
 
-    // 100 Level (12 sections, highly variable, most expensive)
-    for (let i = 1; i <= 12; i++) {
-      // Sections near center ice (3, 4, 9, 10) are pricier
-      const multiplier = [3, 4, 9, 10].includes(i) ? 2.5 : 1.8;
+    // 100 Level (24 sections: 100-123)
+    // Center ice sections usually 105, 106, 116, 117
+    for (let i = 0; i <= 23; i++) {
+      const isCenter = [5, 6, 16, 17].includes(i);
+      const multiplier = isCenter ? 2.5 : 1.8;
       const price = basePrice * multiplier + (Math.random() * 50 - 25);
+      const numStr = i.toString().padStart(2, '0');
       sections.push({
-        id: `sec-1${i.toString().padStart(2, '0')}`,
-        name: `Section 1${i.toString().padStart(2, '0')}`,
+        id: `sec-1${numStr}`,
+        name: `Section 1${numStr}`,
         averagePrice: await convertUsdToPriceObject(Math.max(50, price))
       });
     }
 
-    // 200 Level (16 sections, mid-range)
-    for (let i = 1; i <= 16; i++) {
-      const multiplier = [4, 5, 12, 13].includes(i) ? 1.5 : 1.2;
+    // 200 Level (27 sections: 200-226)
+    for (let i = 0; i <= 26; i++) {
+      const isCenter = [6, 7, 19, 20].includes(i);
+      const multiplier = isCenter ? 1.5 : 1.2;
       const price = basePrice * multiplier + (Math.random() * 30 - 15);
+      const numStr = i.toString().padStart(2, '0');
       sections.push({
-        id: `sec-2${i.toString().padStart(2, '0')}`,
-        name: `Section 2${i.toString().padStart(2, '0')}`,
+        id: `sec-2${numStr}`,
+        name: `Section 2${numStr}`,
         averagePrice: await convertUsdToPriceObject(Math.max(40, price))
       });
     }
 
-    // 300 Level (20 sections, cheapest)
-    for (let i = 1; i <= 20; i++) {
-      const multiplier = [5, 6, 15, 16].includes(i) ? 0.8 : 0.5;
+    // 300 Level (28 sections: 300-327)
+    for (let i = 0; i <= 27; i++) {
+      const isCenter = [7, 8, 21, 22].includes(i);
+      const multiplier = isCenter ? 0.8 : 0.5;
       const price = basePrice * multiplier + (Math.random() * 20 - 10);
+      const numStr = i.toString().padStart(2, '0');
       sections.push({
-        id: `sec-3${i.toString().padStart(2, '0')}`,
-        name: `Section 3${i.toString().padStart(2, '0')}`,
+        id: `sec-3${numStr}`,
+        name: `Section 3${numStr}`,
         averagePrice: await convertUsdToPriceObject(Math.max(25, price))
       });
     }
